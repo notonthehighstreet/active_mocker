@@ -1,10 +1,11 @@
+# frozen_string_literal: true
 task :integration do
   Dir.chdir("test_rails_4_app") do
-    root     = File.expand_path('../../', __FILE__)
+    root = File.expand_path("../../", __FILE__)
     gemfiles, error_verbosity = if ENV["TRAVIS"]
-                 [[ENV["BUNDLE_GEMFILE"]], "1"]
-               else
-                 [Dir[Pathname(File.join(root, "test_rails_4_app/gemfiles/*.gemfile")).expand_path], 0]
+                                  [[ENV["BUNDLE_GEMFILE"]], "1"]
+                                else
+                                  [Dir[Pathname(File.join(root, "test_rails_4_app/gemfiles/*.gemfile")).expand_path], 0]
                end
     Bundler.with_clean_env do
       gemfiles.each do |gemfile|
