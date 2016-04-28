@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+desc "setup"
 task :setup do
   unless ENV["TRAVIS"]
     Bundler.with_clean_env do
