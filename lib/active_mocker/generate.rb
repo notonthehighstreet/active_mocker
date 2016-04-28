@@ -9,7 +9,7 @@ module ActiveMocker
       check_directory!(:model_dir)
       raise_missing_arg(:model_dir) unless Dir.exist?(config.model_dir)
 
-      @display_errors = DisplayErrors.new(models_paths.count)
+      @display_errors = DisplayErrors.new(active_record_models_with_files(log_errors: false).count)
     end
 
     # @return self
@@ -66,9 +66,9 @@ module ActiveMocker
       @model_names ||= active_record_models.map(&:name)
     end
 
-    def active_record_models_with_files
+    def active_record_models_with_files(log_errors: true)
       @active_record_models_with_files ||= models_paths.map do |file|
-        model = constant_from(model_name_from(file))
+        model = constant_from(model_name_from(file), log_errors: log_errors)
         [model, file] if model
       end.compact
     end
@@ -77,12 +77,12 @@ module ActiveMocker
       @models_paths ||= Dir.glob(config.single_model_path || File.join(config.model_dir, "**/*.rb"))
     end
 
-    def constant_from(model_name)
+    def constant_from(model_name, log_errors: true)
       constant = model_name.constantize
       return unless constant.ancestors.include?(ActiveRecord::Base)
       constant
     rescue StandardError, LoadError => e
-      display_errors.wrap_an_exception(e, model_name)
+      display_errors.wrap_an_exception(e, model_name) if log_errors
       nil
     end
 
